@@ -59,7 +59,8 @@
                 }
               ]
             }
-          }
+          },
+          "outputs": ["{options.outputPath}"]
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -94,7 +95,8 @@
               "apps/material/src/favicon.ico",
               "apps/material/src/assets"
             ]
-          }
+          },
+          "outputs": ["coverage/apps/material"]
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
@@ -134,10 +136,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["apps/material-e2e/tsconfig.e2e.json"],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/material-e2e/**"
-            ]
+            "exclude": ["**/node_modules/**", "!apps/material-e2e/**/*"]
           }
         }
       }
@@ -197,7 +196,8 @@
                 }
               ]
             }
-          }
+          },
+          "outputs": ["{options.outputPath}"]
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
@@ -223,20 +223,16 @@
               "apps/bootstrap/tsconfig.app.json",
               "apps/bootstrap/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/bootstrap/**"
-            ]
+            "exclude": ["**/node_modules/**", "!apps/bootstrap/**/*"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "apps/bootstrap/jest.config.js",
-            "tsConfig": "apps/bootstrap/tsconfig.spec.json",
-            "passWithNoTests": true,
-            "setupFile": "apps/bootstrap/src/test-setup.ts"
-          }
+            "passWithNoTests": true
+          },
+          "outputs": ["coverage/apps/bootstrap"]
         }
       }
     },
@@ -262,10 +258,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["apps/bootstrap-e2e/tsconfig.e2e.json"],
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/bootstrap-e2e/**"
-            ]
+            "exclude": ["**/node_modules/**", "!apps/bootstrap-e2e/**/*"]
           }
         }
       }
@@ -280,13 +273,50 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["libs/datasource/tsconfig.lib.json"],
-            "exclude": ["**/node_modules/**", "!libs/datasource/**"]
+            "exclude": ["**/node_modules/**", "!libs/datasource/**/*"]
           }
         }
       },
       "schematics": {
         "@nrwl/angular:component": {
           "styleext": "scss"
+        }
+      }
+    },
+    "test-package": {
+      "projectType": "library",
+      "root": "libs/test-package",
+      "sourceRoot": "libs/test-package/src",
+      "prefix": "ngrid-starters",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/test-package/tsconfig.lib.json",
+            "project": "libs/test-package/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/test-package/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/test-package/src/**/*.ts",
+              "libs/test-package/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/test-package"],
+          "options": {
+            "jestConfig": "libs/test-package/jest.config.js",
+            "passWithNoTests": true
+          }
         }
       }
     }
@@ -297,11 +327,18 @@
   },
   "schematics": {
     "@nrwl/angular:application": {
+      "style": "scss",
+      "linter": "eslint",
       "unitTestRunner": "jest",
       "e2eTestRunner": "cypress"
     },
     "@nrwl/angular:library": {
+      "style": "scss",
+      "linter": "eslint",
       "unitTestRunner": "jest"
+    },
+    "@nrwl/angular:component": {
+      "style": "scss"
     }
   }
 }
